@@ -56,6 +56,7 @@ const schema = buildSchema(`
   }
   type Query {
     items: [Item]!
+    item(id: String!): Item
   }
 `);
 class Part {
@@ -94,7 +95,13 @@ class Item {
   }
 }
 const root = {
-  items: () => delay(1000).then (() => fakeDatabase.itemsIds.map(id => new Item(id))),
+  items: () => {
+    return delay(1000).then(() => fakeDatabase.itemsIds.map(id => new Item(id)));
+  },
+  item: ({ id }) => {
+    if (fakeDatabase.itemsIds.find(o => o === id) === undefined) return null;
+    return new Item(id);
+  }
 };
 const app = express();
 app.use('/graphql', graphqlHTTP({
