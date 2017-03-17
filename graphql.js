@@ -5,7 +5,7 @@ const { buildSchema } = require('graphql');
 const delay = (ms) =>
   new Promise(resolve => setTimeout(resolve, ms));
 const fakeDatabase = {
-  itemById: {
+  itemsById: {
     'gcat': {
       id: 'gcat',
       name: 'grumpy cat',
@@ -16,11 +16,11 @@ const fakeDatabase = {
       name: 'super dog',
     },
   },
-  itemIds: [
+  itemsIds: [
     'gcat',
     'sdog',
   ],
-  partById: {
+  partsById: {
     0: {
       id: 0,
       name: 'fur',
@@ -37,7 +37,7 @@ const fakeDatabase = {
       itemId: 'sdog',
     }
   },
-  partIds: [
+  partsIds: [
     0,
     1,
     2,
@@ -66,10 +66,10 @@ class Part {
     return this.id;
   }
   name() {
-    return fakeDatabase.partById[this.id].name;
+    return fakeDatabase.partsById[this.id].name;
   }
   itemId() {
-    return fakeDatabase.partById[this.id].itemId;
+    return fakeDatabase.partsById[this.id].itemId;
   }
 }
 class Item {
@@ -80,21 +80,21 @@ class Item {
     return this.id;
   }
   name() {
-    return fakeDatabase.itemById[this.id].name;
+    return fakeDatabase.itemsById[this.id].name;
   }
   description() {
-    const item = fakeDatabase.itemById[this.id];
+    const item = fakeDatabase.itemsById[this.id];
     return item.description !== undefined ? item.description : null;
   }
   parts() {
-    return delay(1000).then (() => fakeDatabase.partIds
+    return delay(1000).then (() => fakeDatabase.partsIds
       .map(id => new Part(id))
       .filter(part => part.itemId() === this.id)
     );
   }
 }
 const root = {
-  items: () => delay(1000).then (() => fakeDatabase.itemIds.map(id => new Item(id))),
+  items: () => delay(1000).then (() => fakeDatabase.itemsIds.map(id => new Item(id))),
 };
 const app = express();
 app.use('/graphql', graphqlHTTP({
